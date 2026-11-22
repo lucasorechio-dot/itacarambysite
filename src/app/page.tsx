@@ -335,7 +335,16 @@ export default async function Home() {
             <p>
               {SITE_NAME} — {SITE_TAGLINE} · {settings.cro} · {settings.city}
             </p>
-            <p>© {SITE_NAME}. Todos os direitos reservados.</p>
+            <p className="flex items-center gap-4">
+              <span>© {SITE_NAME}. Todos os direitos reservados.</span>
+              <a href="/admin" rel="nofollow" className="inline-flex items-center gap-1.5 text-ivory/40 transition hover:text-copper">
+                <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                  <rect x="5" y="11" width="14" height="9" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+                Área restrita
+              </a>
+            </p>
           </div>
         </div>
       </footer>
