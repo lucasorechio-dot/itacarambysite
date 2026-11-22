@@ -17,12 +17,12 @@ const MODELS = [
   {
     id: "protocolo",
     tab: "Protocolo sobre implantes",
-    title: "Protocolo sobre 4 implantes, por inteiro.",
-    text: "Arcada completa fixa sobre implantes: dentes com anatomia individual, gengiva em resina e implantes posteriores inclinados para aproveitar melhor o osso.",
-    points: ["14 dentes sobre base em resina rosa", "2 implantes retos e 2 inclinados (técnica All-on-4)"],
+    title: "Protocolo superior sobre 4 implantes.",
+    text: "Arcada completa fixa sobre implantes: dentes com anatomia e cor individual, gengiva em resina caracterizada e implantes posteriores inclinados para aproveitar melhor o osso.",
+    points: ["14 dentes sobre gengiva em resina caracterizada", "2 implantes retos e 2 inclinados (técnica All-on-4)"],
     src: "/3d/protocolo.glb",
-    alt: "Modelo 3D de protocolo inferior sobre quatro implantes",
-    orbit: "0deg 62deg 88%",
+    alt: "Modelo 3D de protocolo superior sobre quatro implantes",
+    orbit: "0deg 82deg 100%",
   },
 ];
 
