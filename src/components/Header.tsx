@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LogoMark, LogoName } from "@/components/Logo";
-import { site, whatsappLink } from "@/content/site";
+import { SITE_NAME, whatsappLink } from "@/content/site";
 
 const links = [
   { href: "#inicio", label: "Início" },
@@ -13,7 +13,7 @@ const links = [
   { href: "#contato", label: "Contato" },
 ];
 
-export function Header() {
+export function Header({ whatsapp }: { whatsapp: string }) {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -31,9 +31,9 @@ export function Header() {
       }`}
     >
       <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5 py-4">
-        <a href="#inicio" className="flex items-center gap-3 text-copper" aria-label={`${site.name} — início`}>
+        <a href="#inicio" className="flex items-center gap-3 text-copper" aria-label={`${SITE_NAME} — início`}>
           <LogoMark className="h-8 w-auto" />
-          <LogoName className="h-5 w-auto sm:h-6" title={site.name} />
+          <LogoName className="h-5 w-auto sm:h-6" title={SITE_NAME} />
         </a>
 
         <nav className="hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.15em] text-ivory/80 xl:flex">
@@ -43,7 +43,7 @@ export function Header() {
             </a>
           ))}
           <a
-            href={whatsappLink("Olá! Gostaria de enviar um caso para o laboratório.")}
+            href={whatsappLink(whatsapp, "Olá! Gostaria de enviar um caso para o laboratório.")}
             target="_blank"
             rel="noopener noreferrer"
             className="whitespace-nowrap rounded-full bg-copper px-5 py-2.5 text-navy transition hover:bg-ivory"
