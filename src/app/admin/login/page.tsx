@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LogoMark, LogoName } from "@/components/Logo";
 import { LoginForm } from "./LoginForm";
 
@@ -17,6 +18,9 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
           <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-800">Este usuário não tem acesso ao painel.</p>
         )}
         <LoginForm />
+        <p className="mt-6 text-center text-sm">
+          <Link href="/admin/recuperar" className="text-navy/70 underline hover:text-copper">Esqueci minha senha</Link>
+        </p>
       </div>
     </main>
   );

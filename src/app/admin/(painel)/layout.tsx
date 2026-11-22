@@ -39,6 +39,7 @@ export default async function PainelLayout({ children }: LayoutProps<"/admin">) 
           <p className="truncate">{email}</p>
           <div className="mt-3 flex gap-3">
             <a href="/" target="_blank" className="underline hover:text-ivory">Ver site</a>
+            <Link href="/admin/nova-senha" className="underline hover:text-ivory">Trocar senha</Link>
             <form action={logout}>
               <button className="underline hover:text-ivory">Sair</button>
             </form>

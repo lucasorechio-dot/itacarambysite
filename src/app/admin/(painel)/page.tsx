@@ -3,7 +3,8 @@ import { requireAdmin } from "@/lib/admin";
 
 export const instant = false;
 
-export default async function AdminHome() {
+export default async function AdminHome({ searchParams }: PageProps<"/admin">) {
+  const { senha } = await searchParams;
   const { supabase } = await requireAdmin();
   const count = (t: string) => supabase.from(`ita_${t}`).select("id", { count: "exact", head: true });
   const [unread, services, gallery, partners, testimonials] = await Promise.all([
@@ -24,6 +25,9 @@ export default async function AdminHome() {
 
   return (
     <>
+      {senha === "alterada" && (
+        <p className="mb-6 rounded-xl bg-green-50 p-4 text-sm text-green-900">Senha alterada com sucesso.</p>
+      )}
       <h1 className="font-serif text-3xl text-navy">Olá! 👋</h1>
       <p className="mt-1 text-sm text-ink/60">Tudo o que você salvar aqui aparece no site na hora.</p>
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
