@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Header } from "@/components/Header";
 import { ContactForm } from "@/components/ContactForm";
 import { LogoFull, LogoMark } from "@/components/Logo";
-import { Viewer3D } from "@/components/Viewer3D";
+import { Gallery3D } from "@/components/Gallery3D";
 import { getContent } from "@/lib/content";
 import { SITE_NAME, SITE_TAGLINE, mapsLink, steps, whatsappLink } from "@/content/site";
 
@@ -207,22 +207,7 @@ export default async function Home() {
         {/* 3D */}
         <section id="modelo-3d" className="relative overflow-hidden bg-navy py-24 text-ivory">
           <div className="pointer-events-none absolute -left-40 top-10 h-[420px] w-[420px] rounded-full bg-copper/10 blur-3xl" />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 lg:grid-cols-[1fr_1.1fr]">
-            <div>
-              <Eyebrow light>Veja em 3D</Eyebrow>
-              <h2 className="font-serif text-3xl sm:text-4xl">Coroa sobre implante, de todos os ângulos.</h2>
-              <p className="mt-5 leading-relaxed text-ivory/70">
-                Gire, aproxime e observe os detalhes: a anatomia das cúspides, o encaixe no pilar e o implante rosqueado.
-                No celular, toque em <strong className="text-copper">“Ver na sua mesa”</strong> para ver a peça em realidade aumentada.
-              </p>
-              <ul className="mt-8 grid gap-3 text-sm text-ivory/75">
-                <li className="flex gap-3"><span className="text-copper">●</span> Arraste para girar · role ou faça pinça para aproximar</li>
-                <li className="flex gap-3"><span className="text-copper">●</span> Coroa em cerâmica sobre pilar e implante de titânio</li>
-              </ul>
-              <p className="mt-8 text-xs text-ivory/40">Modelo ilustrativo.</p>
-            </div>
-            <Viewer3D src="/3d/implante-coroa.glb" alt="Modelo 3D de coroa de molar sobre implante" />
-          </div>
+          <Gallery3D />
         </section>
 
         {/* GALERIA */}

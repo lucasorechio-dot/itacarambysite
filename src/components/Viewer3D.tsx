@@ -12,7 +12,7 @@ declare module "react" {
 }
 
 /** Visualizador 3D: girar, aproximar e ver em realidade aumentada no celular. */
-export function Viewer3D({ src, alt }: { src: string; alt: string }) {
+export function Viewer3D({ src, alt, orbit = "35deg 72deg 130%" }: { src: string; alt: string; orbit?: string }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export function Viewer3D({ src, alt }: { src: string; alt: string }) {
           auto-rotate-delay="1500"
           rotation-per-second="20deg"
           interaction-prompt="auto"
-          camera-orbit="35deg 72deg 130%"
+          camera-orbit={orbit}
           min-camera-orbit="auto auto 60%"
           max-camera-orbit="auto auto 180%"
           shadow-intensity="0.8"
