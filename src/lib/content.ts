@@ -17,6 +17,7 @@ function mergeSettings(data: Partial<Settings> | null | undefined): Settings {
     owner: { ...defaultSettings.owner, ...d.owner },
     contact: { ...defaultSettings.contact, ...d.contact },
     verse: { ...defaultSettings.verse, ...d.verse },
+    store: { ...defaultSettings.store, ...d.store },
     leadTimes: d.leadTimes ?? defaultSettings.leadTimes,
   };
 }

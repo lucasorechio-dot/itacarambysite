@@ -1,15 +1,64 @@
 import { deleteItem, moveItem, saveItem } from "../actions";
 import { ImageField } from "@/components/admin/ImageField";
+import { FileField } from "@/components/admin/FileField";
 import { ConfirmButton, IconButton, SubmitButton, inputCls, labelCls } from "@/components/admin/ui";
+import { brl } from "@/content/site";
 
-export type Kind = "services" | "gallery" | "partners" | "testimonials";
+export type Kind = "services" | "gallery" | "partners" | "testimonials" | "products" | "courses";
 type Row = Record<string, unknown> & { id: string; published: boolean };
 
-const titleOf = (kind: Kind, r: Row) => String(kind === "testimonials" ? r.name : kind === "partners" ? r.name : r.title);
+const titleOf = (kind: Kind, r: Row) => {
+  if (kind === "testimonials" || kind === "partners") return String(r.name);
+  if (kind === "products") return `${r.name} · ${brl(Number(r.price_cents))} · ${r.kind === "digital" ? "digital" : "físico"}`;
+  return String(r.title);
+};
+
+/** centavos -> "180,00" para o campo de preço */
+const money = (c: unknown) => (c == null || c === "" ? "" : (Number(c) / 100).toFixed(2).replace(".", ","));
 
 function Fields({ kind, r }: { kind: Kind; r?: Row }) {
   const v = (k: string) => (r?.[k] as string | undefined) ?? "";
   switch (kind) {
+    case "products":
+      return (
+        <>
+          <label className={labelCls}>
+            Tipo
+            <select name="kind" defaultValue={v("kind") || "fisico"} className={inputCls}>
+              <option value="fisico">Modelo físico (envio ou retirada)</option>
+              <option value="digital">Arquivo digital (download)</option>
+            </select>
+          </label>
+          <label className={labelCls}>Preço (R$)<input name="price" required inputMode="decimal" defaultValue={money(r?.price_cents)} placeholder="180,00" className={inputCls} /></label>
+          <label className={`${labelCls} sm:col-span-2`}>Nome<input name="name" required defaultValue={v("name")} className={inputCls} /></label>
+          <label className={`${labelCls} sm:col-span-2`}>
+            Descrição
+            <textarea name="description" rows={3} defaultValue={v("description")} className={inputCls} />
+          </label>
+          <ImageField name="image_url" defaultValue={v("image_url")} folder="loja" />
+          <FileField name="file_path" defaultValue={v("file_path")} label="Arquivo (só para produto digital)" />
+        </>
+      );
+    case "courses":
+      return (
+        <>
+          <label className={labelCls}>Nome do curso<input name="title" required defaultValue={v("title")} className={inputCls} /></label>
+          <label className={labelCls}>Endereço (slug)<input name="slug" defaultValue={v("slug")} placeholder="gerado pelo nome" className={inputCls} /></label>
+          <label className={`${labelCls} sm:col-span-2`}>Subtítulo<input name="subtitle" defaultValue={v("subtitle")} className={inputCls} /></label>
+          <label className={`${labelCls} sm:col-span-2`}>
+            Descrição
+            <textarea name="description" rows={4} defaultValue={v("description")} className={inputCls} />
+          </label>
+          <label className={`${labelCls} sm:col-span-2`}>
+            Destaques (um por linha)
+            <textarea name="highlights" rows={4} defaultValue={((r?.highlights as string[]) ?? []).join("\n")} className={inputCls} />
+          </label>
+          <label className={labelCls}>Mensalidade (R$) — vazio = sem assinatura<input name="price_monthly" inputMode="decimal" defaultValue={money(r?.price_monthly_cents)} placeholder="97,00" className={inputCls} /></label>
+          <label className={labelCls}>Curso completo (R$) — vazio = sem compra única<input name="price_full" inputMode="decimal" defaultValue={money(r?.price_full_cents)} placeholder="697,00" className={inputCls} /></label>
+          <label className={labelCls}>Validade da compra única (dias)<input name="access_days" type="number" min={1} defaultValue={String(r?.access_days ?? 365)} className={inputCls} /></label>
+          <ImageField name="image_url" defaultValue={v("image_url")} folder="cursos" label="Imagem de capa" />
+        </>
+      );
     case "services":
       return (
         <>

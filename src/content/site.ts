@@ -13,7 +13,33 @@ export type Settings = {
   contact: { whatsapp: string; whatsappLabel: string; email: string; instagram: string; address: string };
   leadTimes: LeadTime[];
   verse: { text: string; ref: string };
+  store: { shippingFlatCents: number; pickupNote: string };
 };
+
+export type Product = {
+  id: string;
+  kind: "fisico" | "digital";
+  name: string;
+  description: string;
+  price_cents: number;
+  image_url: string;
+};
+export type Course = {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  image_url: string;
+  highlights: string[];
+  price_monthly_cents: number | null;
+  price_full_cents: number | null;
+  access_days: number;
+};
+
+export function brl(cents: number) {
+  return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
 
 export type Service = { id: string; title: string; text: string; items: string[]; image_url: string };
 export type GalleryItem = { id: string; title: string; tag: string; image_url: string };
@@ -77,6 +103,10 @@ export const defaultSettings: Settings = {
   verse: {
     text: "Confia os teus cuidados ao Senhor, e ele te sustentará; jamais permitirá que o justo seja abalado.",
     ref: "Salmos 55.22",
+  },
+  store: {
+    shippingFlatCents: 3500,
+    pickupNote: "Retirada no laboratório em Anápolis - GO. Combine o horário pelo WhatsApp.",
   },
 };
 

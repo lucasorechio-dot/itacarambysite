@@ -7,10 +7,19 @@ import { CONTENT_TAG } from "@/lib/content";
 import { createSessionClient } from "@/lib/supabase/server";
 import type { Settings } from "@/content/site";
 
-type Table = "services" | "gallery" | "partners" | "testimonials";
-const TABLES: Table[] = ["services", "gallery", "partners", "testimonials"];
+type Table = "services" | "gallery" | "partners" | "testimonials" | "products" | "courses";
+const TABLES: Table[] = ["services", "gallery", "partners", "testimonials", "products", "courses"];
 
 const str = (f: FormData, k: string, max = 2000) => String(f.get(k) ?? "").trim().slice(0, max);
+/** "1.234,56" / "180" / "R$ 97,00" -> centavos; vazio -> null */
+const cents = (f: FormData, k: string): number | null => {
+  const raw = str(f, k, 30).replace(/[^\d,.]/g, "");
+  if (!raw) return null;
+  const n = Number(raw.includes(",") ? raw.replace(/\./g, "").replace(",", ".") : raw);
+  return Number.isFinite(n) ? Math.round(n * 100) : null;
+};
+const slugify = (s: string) =>
+  s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80);
 const lines = (f: FormData, k: string) =>
   str(f, k, 8000)
     .split(/\r?\n/)
@@ -66,6 +75,31 @@ function rowFromForm(t: Table, f: FormData) {
       return { name: str(f, "name", 120), logo_url: str(f, "logo_url", 600), published };
     case "testimonials":
       return { quote: str(f, "quote", 800), name: str(f, "name", 120), role: str(f, "role", 120), published };
+    case "products": {
+      const kind = str(f, "kind", 10) === "digital" ? "digital" : "fisico";
+      return {
+        kind,
+        name: str(f, "name", 140),
+        description: str(f, "description", 1500),
+        price_cents: cents(f, "price") ?? 0,
+        image_url: str(f, "image_url", 600),
+        file_path: kind === "digital" ? str(f, "file_path", 400) : "",
+        published,
+      };
+    }
+    case "courses":
+      return {
+        title: str(f, "title", 140),
+        slug: slugify(str(f, "slug", 80) || str(f, "title", 140)),
+        subtitle: str(f, "subtitle", 200),
+        description: str(f, "description", 3000),
+        highlights: lines(f, "highlights"),
+        image_url: str(f, "image_url", 600),
+        price_monthly_cents: cents(f, "price_monthly"),
+        price_full_cents: cents(f, "price_full"),
+        access_days: Math.max(1, Math.min(3650, Number(str(f, "access_days", 5)) || 365)),
+        published,
+      };
   }
 }
 
@@ -75,6 +109,9 @@ export async function saveItem(formData: FormData) {
   const id = str(formData, "id", 64);
   const row = rowFromForm(t, formData);
   if (t === "gallery" && !("image_url" in row && row.image_url)) throw new Error("Escolha uma foto para a galeria.");
+  if (t === "courses" && "price_monthly_cents" in row && row.price_monthly_cents == null && row.price_full_cents == null) {
+    throw new Error("Informe pelo menos um preço (mensal ou completo).");
+  }
 
   if (id) {
     const { error } = await supabase.from(`ita_${t}`).update(row).eq("id", id);
@@ -124,6 +161,22 @@ export async function setMessageRead(formData: FormData) {
   refresh();
 }
 
+// ---------- PEDIDOS ----------
+const ORDER_STATUS = ["pendente", "pago", "enviado", "entregue", "cancelado"];
+
+export async function updateOrder(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = str(formData, "id", 64);
+  const status = str(formData, "status", 20);
+  if (!ORDER_STATUS.includes(status)) throw new Error("Status inválido");
+  const { data: current } = await supabase.from("ita_orders").select("status,paid_at").eq("id", id).maybeSingle();
+  const patch: Record<string, unknown> = { status, admin_notes: str(formData, "admin_notes", 1000) };
+  if (status === "pago" && !current?.paid_at) patch.paid_at = new Date().toISOString();
+  const { error } = await supabase.from("ita_orders").update(patch).eq("id", id);
+  if (error) throw new Error(error.message);
+  refresh();
+}
+
 export async function deleteMessage(formData: FormData) {
   const { supabase } = await requireAdmin();
   const { error } = await supabase.from("ita_messages").delete().eq("id", str(formData, "id", 64));
@@ -165,6 +218,7 @@ export async function saveSettings(_prev: SettingsState, f: FormData): Promise<S
     },
     leadTimes,
     verse: { text: str(f, "verse_text", 400), ref: str(f, "verse_ref", 60) },
+    store: { shippingFlatCents: cents(f, "shipping_flat") ?? 0, pickupNote: str(f, "pickup_note", 400) },
   };
 
   if (data.contact.whatsapp.length < 10) return { error: "WhatsApp inválido: use só números com DDI e DDD (ex.: 5562984490810)." };

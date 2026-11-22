@@ -12,11 +12,18 @@ const nav = [
   { href: "/admin/galeria", label: "Galeria" },
   { href: "/admin/parceiros", label: "Parceiros e depoimentos" },
   { href: "/admin/textos", label: "Textos e contatos" },
+  { href: "/admin/loja/pedidos", label: "Loja · Pedidos" },
+  { href: "/admin/loja/produtos", label: "Loja · Modelos" },
+  { href: "/admin/loja/cursos", label: "Loja · Cursos" },
 ];
 
 export default async function PainelLayout({ children }: LayoutProps<"/admin">) {
   const { supabase, email } = await requireAdmin();
-  const { count } = await supabase.from("ita_messages").select("id", { count: "exact", head: true }).eq("read", false);
+  const [msgs, orders] = await Promise.all([
+    supabase.from("ita_messages").select("id", { count: "exact", head: true }).eq("read", false),
+    supabase.from("ita_orders").select("id", { count: "exact", head: true }).eq("status", "pendente"),
+  ]);
+  const badge: Record<string, number> = { "/admin/mensagens": msgs.count ?? 0, "/admin/loja/pedidos": orders.count ?? 0 };
 
   return (
     <div className="lg:grid lg:grid-cols-[240px_1fr]">
@@ -29,9 +36,7 @@ export default async function PainelLayout({ children }: LayoutProps<"/admin">) 
           {nav.map((n) => (
             <Link key={n.href} href={n.href} className="flex shrink-0 items-center justify-between gap-2 rounded-lg px-3 py-2 text-ivory/80 hover:bg-white/10 hover:text-ivory">
               {n.label}
-              {n.href === "/admin/mensagens" && !!count && (
-                <span className="rounded-full bg-copper px-2 text-xs font-bold text-navy">{count}</span>
-              )}
+              {!!badge[n.href] && <span className="rounded-full bg-copper px-2 text-xs font-bold text-navy">{badge[n.href]}</span>}
             </Link>
           ))}
         </nav>

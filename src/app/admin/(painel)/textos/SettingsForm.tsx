@@ -76,6 +76,17 @@ export function SettingsForm({ s }: { s: Settings }) {
         </label>
       </Card>
 
+      <Card title="Loja — entrega dos modelos físicos">
+        <label className={labelCls}>
+          Frete fixo para envio (R$)
+          <input name="shipping_flat" inputMode="decimal" defaultValue={(s.store.shippingFlatCents / 100).toFixed(2).replace(".", ",")} className={inputCls} />
+        </label>
+        <label className={full}>
+          Instruções de retirada no laboratório
+          <textarea name="pickup_note" rows={2} defaultValue={s.store.pickupNote} className={inputCls} />
+        </label>
+      </Card>
+
       <Card title="Versículo do rodapé">
         <label className={full}>Texto<textarea name="verse_text" rows={2} defaultValue={s.verse.text} className={inputCls} /></label>
         <label className={labelCls}>Referência<input name="verse_ref" defaultValue={s.verse.ref} className={inputCls} /></label>
